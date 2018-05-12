@@ -56,7 +56,7 @@ class Control(models.Model):
     def __str__(self):
         return self.usuario
 
-class seleccionmuseo (models.Model):
+class Seleccionmuseo (models.Model):
     usuario = models.ForeignKey('Usuario')
     museo = models.ForeignKey(User)
     fecha = models.DateTimeField()
