@@ -35,7 +35,7 @@ class Comentario (models.Model):
 """
 no se si es necesario
 class Pagina(models.Model):
-    usuario = models.ForeignKey(Usuario)
+    usuario = models.ForeignKey(User)
     nombre = models.CharField(max_length=200, default='')
     enlace = models.CharField(max_length=200, default='')
     def __str__(self):
@@ -57,6 +57,6 @@ class Control(models.Model):
         return self.usuario
 
 class Seleccionmuseo (models.Model):
-    usuario = models.ForeignKey('Usuario')
-    museo = models.ForeignKey(User)
+    usuario = models.ForeignKey(User)
+    museo = models.ForeignKey('Museo')
     fecha = models.DateTimeField()
