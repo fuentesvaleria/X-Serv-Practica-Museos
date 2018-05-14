@@ -8,12 +8,12 @@ from django.dispatch import receiver
 # Create your models here.
 
 class Museo (models.Model):
-    num = models.CharField(max_length = 5, default='')
+    idx = models.Integer()
     nombre = models.CharField(max_length=200, default='')
     descripcion = models.TextField(default = '', blank = True)
     # debido a que la accesibilidad solo son dos opciones 0/1
     #https://docs.djangoproject.com/en/2.0/ref/models/fields/
-    accesiblilidad = models.IntegerField(choices = (0,'0'),(1,'1'))
+    accesibilidad = models.IntegerField(choices = (0,'0'),(1,'1'))
     url = models.CharField(max_length=200, default='', blank = True)
     via = models.CharField(max_length=100, default='', blank=True)
     localidad = models.CharField(max_length=100, default='', blank=True)
