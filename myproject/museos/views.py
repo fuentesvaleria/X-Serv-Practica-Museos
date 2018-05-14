@@ -83,7 +83,7 @@ https://docs.python.org/3/library/urllib.request.html
 					pass
 	if request.method == "GET" or option == "push off" or option == "":
 		cincoment = Museo.objects.annotate(num_comentarios('comentario')).order_by('-num_comentarios')[:5]
-		accesibilidad = True
+		accesibilidad = False
 	listcontroles = Control.object.all()
 	listusuarios = User.objects.all()
 	if len(listcontroles) != len(listusuarios):
@@ -138,3 +138,25 @@ def userlogout(request):
 	if request.method == "POST":
 		logout(request)
 	return HttpResponseRedirect('/')
+
+@csrf_exempt
+def pagmuseos(request, idx):
+	if request.method == "GET":
+		try: #nos dan el id de cada museo
+			museo = Museo.object.all(idx=idx)
+		except Museo.DoesNotExist:
+			#hay que meter una plantilla que nos diga que ha habido un error
+			plantilla = "ha habido un error lo siento"
+			return HttpResponse(plantilla, status=404) #404 de que ha habido fallo
+	else: #que no de el museo 
+		respuesta = request.POST['texto']
+		museo = Museo.objects.get(idx=idx)
+		#tengo nuevo comentario donde devo guardar el texto y el museo
+		# Ademas, se mostraran todos los comentarios que se 
+		#hayan puesto para este museo.
+		newcomentario = Comentario(texto=comentario, museo=museo)
+		newcomentario.save()
+		#tengo que meter el template de la pagina del museo 
+		comentarios = Comentario.object.filter(museo=museo)
+		respuesta=request
+		return HttpResponse(respuesta)#tmb tengo que arreglarlo para que funcione con templates
