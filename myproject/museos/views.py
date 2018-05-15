@@ -10,18 +10,22 @@ from django.template import Context, RequestContext
 from django.template.loader import get_template
 #usuario
 from django.contrib.auth.models import User
+from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 import xml.etree.ElementTree
 import urllib.request import urlopen
+from django.utils import timezone
 # Create your views here.
+
+direccion = 'https://datos.madrid.es/portal/site/egob/menuitem.ac61933d6ee3c31cae77ae7784f1a5a0/?vgnextoid=00149033f2201410VgnVCM100000171f5a0aRCRD&format=xml&file=0&filename=201132-0-museos&mgmtid=118f2fdbecc63410VgnVCM1000000b205a0aRCRD&preview=full'
 
 @csrf_exempt
 def barra(request):
 	#aqui tiene que ir la plantilla
 """
  un boton, que al pulsarlo se pasara a ver en todos 
- los listados los museos accesibles, y so ́lo estos. 
+ los listados los museos accesibles, y solo estos. 
  Si se vuelve a pulsar, se volveran a ver todos los museos.
 """
 	if request.method == "POST":
@@ -48,7 +52,7 @@ urllib.request.urlopen( Url , datos = Ninguno , [ tiempo de espera , ] * ,
 Abrir la URL url , que puede ser una cadena o un Requestobjeto.
 https://docs.python.org/3/library/urllib.request.html
 """
-			archivoxml = urlopen(https://datos.madrid.es/portal/site/egob/menuitem.ac61933d6ee3c31cae77ae7784f1a5a0/?vgnextoid=00149033f2201410VgnVCM100000171f5a0aRCRD&format=xml&file=0&filename=201132-0-museos&mgmtid=118f2fdbecc63410VgnVCM1000000b205a0aRCRD&preview=full)
+			archivoxml = urlopen(direccion)
 			#https://www.josedomingo.org/pledin/2015/01/trabajar-con-ficheros-xml-desde-python_1/
 			tree = etree.parse(archivoxml)
 			root = tree.getroot()
@@ -138,25 +142,99 @@ def userlogout(request):
 	if request.method == "POST":
 		logout(request)
 	return HttpResponseRedirect('/')
+	
+@csrf_exempt
+"""
+/museos: -> tengo que poner request
+ Pagina con todos los museos. 
+ Para cada uno de ellos aparecera solo el nombre, 
+ y un enlace a su pagina. 
+"""
+def pagmuseos (request):
+	#tengo que introducir plantilla
+	if request.method == "POST":
+"""
+ En la parte superior de la pagina, existira un formulario distrito. 
+ Para poder filtrar por distrito, se buscara en la base de datos cuales 
+ son los distritos con museos.
+"""
+		if "options" in request.POST:
+			distrito = request.POST['options']
+			if distrito == "All"
+				listmuseos = Museo.object.all()
+			else:
+				listmuseos = Museo.object.filter(distrito = distrito)
+		else:
+			if "Poner" in request.POST:
+				uxd = request.POST['Poner']
+				#para trocerar en , porque todo esta separado asi
+				idx = uxd.split(',')[0]
+				nick = uxd.split(',')[1]
+				museo = Museo.object.get(idx=idx)
+				usuario = User.object.get(username=nick)
+				#debemos guardar con hora y fecha 
+				#que hemos agregado ese museo
+"""
+https://es.stackoverflow.com/questions/121867/implementación-hora-y-fecha-en-django
+ def get_default_my_hour():
+      hour = timezone.now()
+      formatedHour = hour.strftime("%H:%M:%S")
+      return formatedHour
+"""
+				hour = timezone()
+				newseleccion = Seleccionmuseo(usuario=usuario, museo=museo, fecha=hour)
+				newseleccion.save()
+			else:
+				uxd = request.POST['NoPoner']
+				#para trocerar en , porque todo esta separado asi
+				idx = uxd.split(',')[0]
+				nick = uxd.split(',')[1]
+				museo = Museo.object.get(idx=idx)
+				usuario = User.object.get(username=nick)
+				#debemos borrar esa seleccion
+				deleteMuseo = Seleccionmuseo.object.get(usuario=usuario, museo=museo)
+				deleteMuseo.delete()
+		if request.method == "GET" or "options"not in  request.POST:
+			listmuseos = Museo.object.all()
+			distrito = "All"
+		#necesito todos los valores database de la lista de distritos para 
+		#luego convertirlo en tupla y volver a guardarlo en el context
+		#necesario para los templates
+		
+							
+	
 
 @csrf_exempt
-def pagmuseos(request, idx):
+"""
+/museos/id por eso tengo que poner request y id
+Pagina de un museo en la aplicacion. 
+Mostrara toda la informacion razonablemente posible de XML 
+del portal de datos abierto del Ayuntamiento de Madrid->metemos laid del museo 
+incluyendo al menos la que se menciona en otros apartados de este enunciado, 
+la direccion, la descripcion, si es accesible o no, el barrio y el distrito, 
+y los datos de contacto.-> texto del museo informacion mejor dicho
+Ademas, se mostraran todos los comentarios del museo-> newcomentarios guardo todo 
+"""
+def museoo(request, idx):
 	if request.method == "GET":
 		try: #nos dan el id de cada museo
 			museo = Museo.object.all(idx=idx)
+			###
+			comentarios = Comentario.object.filter(idx=idx)
 		except Museo.DoesNotExist:
 			#hay que meter una plantilla que nos diga que ha habido un error
 			plantilla = "ha habido un error lo siento"
 			return HttpResponse(plantilla, status=404) #404 de que ha habido fallo
-	else: #que no de el museo 
+	else: #seria un post que significa que quiere agregar un comentario 
 		respuesta = request.POST['texto']
 		museo = Museo.objects.get(idx=idx)
 		#tengo nuevo comentario donde devo guardar el texto y el museo
 		# Ademas, se mostraran todos los comentarios que se 
 		#hayan puesto para este museo.
-		newcomentario = Comentario(texto=comentario, museo=museo)
+		newcomentario = Comentario(museo=museo, texto=comentario)
 		newcomentario.save()
 		#tengo que meter el template de la pagina del museo 
 		comentarios = Comentario.object.filter(museo=museo)
 		respuesta=request
 		return HttpResponse(respuesta)#tmb tengo que arreglarlo para que funcione con templates
+
