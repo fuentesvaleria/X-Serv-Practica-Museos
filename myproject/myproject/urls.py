@@ -21,5 +21,5 @@ urlpatterns = [
     url(r'^(.*)/xml/?$',views.xml, name='canal xml'),
     url(r'^about/?$',views.about, name='info en html autoria'),
 	url(r'^rss/?$',views.rss, name='comentarios'),
-	url(r'(.*)',views.usuario, name='Pagina del usuario'),
+	url(r'(.*)',views.pusuario, name='Pagina del usuario'),
 ]

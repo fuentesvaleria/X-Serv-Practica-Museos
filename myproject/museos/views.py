@@ -200,9 +200,28 @@ https://es.stackoverflow.com/questions/121867/implementación-hora-y-fecha-en-dj
 		#necesito todos los valores database de la lista de distritos para 
 		#luego convertirlo en tupla y volver a guardarlo en el context
 		#necesario para los templates
+"""
+Para obtener los valores de la DB
+Check out the docs for values_list(). Django does a great job of creating the query specific to your request.
+chat_messages.objects.all().values_list('name')
+Will generate a query similar to:
+SELECT `projectname_chat_messages`.`name` FROM `projectname_chat_messages`
+obtener los valores lista
+mynewlist = list(myset)
+lista->tupla
+[i[0] for i in e]
+"""		
+		listmuseos = Museo.object.all().values_list('museo')
+		listmuseo = list(set(listmuseos))
+		listmuseo = [museo[0]ofr museo in listmuseo]
+		if request.user.is_authenticated():
+			selecciones = Seleccionmuseo.objects.all().values_list('museo').filter(usuario=request.user)
+			listselecciones = [selecciones[0]ofr selecciones in selecciones]
+		else:
+			listselecciones = ""
+			respuesta = request
+		return HttpResponse(respuesta)
 		
-							
-	
 
 @csrf_exempt
 """
@@ -238,3 +257,60 @@ def museoo(request, idx):
 		respuesta=request
 		return HttpResponse(respuesta)#tmb tengo que arreglarlo para que funcione con templates
 
+
+"""
+usuario: Pagina personal de un usuario. 
+Si la URL es “/usuario”, 
+ Mostrara los museos seleccionados por ese usuario  -> con su pagina personalizada letra color etc
+un enlace para mostrar las 5 -> debemos comparar de 5 en 5 
+ Ademas, para cada museo se debera mostrar 
+ la fecha en la que fue seleccionada por el usuario.
+"""
+
+@csrf_exempt
+def pusuario(request,nick):
+	if request.method == "GET":
+		try:
+			usuario = User.objects.get(username=nick)
+		except User.DoesNotExit:
+			plantilla =  "error"
+			return HttpResponse(plantilla,status = 404)
+		#para el query_string
+		queri = request.META['QUERY_STRING']
+	else:
+		queri = ""
+		if request.user.is_authenticated():
+			usuario = User.objects.get(username=request.user.nick)
+			try:
+				usuario = Control.objects.get(usuario=usuario)
+			except:
+				user = User.objects.get(username=request.user.nick)
+				usuario = Control(usuario=user)
+			if 'titulo' in request.POST: #porque el usuario puede personalizar su pagina 
+				usuario.titulo = request.POST['titulo']
+			else:
+				usuario.size = request.POST['size']
+				usuario.color = request.POST['color']
+			usuario.save()
+	#aqui va plantulla del usuario
+	usuario = User.objects.get(username=nick)
+	if queri == "":
+		selecciones = Seleccionmuseo.objects.filter(usuario=request.user)
+	else:
+		#https://docs.djangoproject.com/en/2.0/ref/contrib/postgres/fields/
+		#operador de desigualdad
+		rset = Seleccionmuseo.objects.filter(id_gt=(int(queri)))
+		selecciones = rset.filter(usuario=usuario)
+	
+	if len(selecciones) <= 5:
+		fin = True
+	else:
+		fin = False
+	try:
+		usuario = Control.objects.get(usuario=usuario)
+	except:
+		usuario = ""
+	respuesta = request
+	return HttpResponse(respuesta) 
+			
+	
