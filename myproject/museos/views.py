@@ -242,8 +242,8 @@ def museoo(request, idx):
 			comentarios = Comentario.object.filter(idx=idx)
 		except Museo.DoesNotExist:
 			#hay que meter una plantilla que nos diga que ha habido un error
-			plantilla = "ha habido un error lo siento"
-			return HttpResponse(plantilla, status=404) #404 de que ha habido fallo
+			plantilla = get_template('error.html')
+			return HttpResponse(plantilla.render(), status=404) #404 de que ha habido fallo
 	else: #seria un post que significa que quiere agregar un comentario 
 		respuesta = request.POST['texto']
 		museo = Museo.objects.get(idx=idx)
@@ -273,8 +273,8 @@ def pusuario(request,nick):
 		try:
 			usuario = User.objects.get(username=nick)
 		except User.DoesNotExit:
-			plantilla =  "error"
-			return HttpResponse(plantilla,status = 404)
+			plantilla = get_template('error.html')
+			return HttpResponse(plantilla.render(),status = 404)
 		#para el query_string
 		queri = request.META['QUERY_STRING']
 	else:
