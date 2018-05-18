@@ -18,8 +18,8 @@ urlpatterns = [
     url(r'^logout/?$',views.userlogout, name='Usuario Logout'),
     url(r'^museos/?$',views.pagmuseos, name='Pag con todoslos museos'),
     url(r'^museos/(.*)/?$',views.museoo, name='Pag del museo'),
-    url(r'^(.*)/xml/?$',views.xml, name='canal xml'),
-    url(r'^about/?$',views.about, name='info en html autoria'),
+    #url(r'^(.*)/xml/?$',views.xml, name='canal xml'),
+    #url(r'^about/?$',views.about, name='info en html autoria'),
 	url(r'^rss/?$',views.rss, name='comentarios'),
 	url(r'(.*)',views.pusuario, name='Pagina del usuario'),
 ]
