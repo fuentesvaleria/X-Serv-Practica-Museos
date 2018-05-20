@@ -13,7 +13,7 @@ from django.contrib.auth.views import login, logout
 urlpatterns = [
 	url(r'^/?$',views.barra, name='pagina principal'),
     url(r'^admin/', include(admin.site.urls)),
-    #url(r'^css/style.css$',views.css, name='css'),
+    url(r'^css/style.css$',views.css, name='css'),
     url(r'^login/?$',views.userlogin, name='Usuario Login'),
     url(r'^logout/?$',views.userlogout, name='Usuario Logout'),
     url(r'^museos/?$',views.pagmuseos, name='Pag con todoslos museos'),
