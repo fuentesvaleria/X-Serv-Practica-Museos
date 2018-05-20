@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+    <seleccionados>
+        <titulo> Canal XML de {{ usuario }}</titulo>
+        {% for seleccionado in seleccionados %}
+            <museo>
+                <idx>{{ seleccionados.museo.idm }}</idx>
+                <nombre>{{ seleccionados.museo.nombre }}</nombre>
+                <descripcion>{{ seleccionados.museo.descripcion }}</descripcion>
+                <accesibilidad>{{ seleccionados.museo.accesibilidad }}</accesibilidad>
+                <url>{{ seleccionados.museo.url }}</url>
+                <via>{{ seleccionados.museo.via }}</via>
+                <localidad>{{ seleccionados.museo.localidad }}</localidad>
+                <provincia>{{ seleccionados.museo.provincia }}</provincia>
+                <codigo_postal>{{ seleccionados.museo.codigo_postal }}</codigo_postal>
+                <barrio>{{ seleccionados.museo.barrio }}</barrio>
+                <telefono>{{ seleccionados.museo.telefono }}</telefono>
+            </museo>
+        {% endfor %}
+    </seleccionados>

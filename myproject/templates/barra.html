@@ -1,0 +1,68 @@
+{% extends "registro.html" %}
+
+{% load staticfiles %}
+
+{% block menu %}
+    <ul>
+        <li><a href="/museos">Todos los Museos</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/rss">Todos Los Comentarios</a></li>
+    </ul>
+{% endblock %}
+
+
+{% block side %}
+<div class="side">
+    {% csrf_token %}
+        <h2>Páginas personales</h2>
+        {% for usuario in listaUsuarios %}
+            {% if usuario.titulo != "" %}
+                <img src="{% static 'imagen/list.gif' %}" alt="list"/>
+                <a href="/{{ usuario.usuario }}">"{{ usuario.titulo }}"</a> --
+                {{ usuario.usuario }}<br />
+            {% else %}
+                <img src="{% static 'imagen/list.gif' %}" alt="list"/>
+                <a href="/{{ usuario.usuario }}">"Página de {{ usuario.usuario }}"</a>
+                -- {{ usuario.usuario }}<br />
+            {% endif %}
+        {% endfor %}
+        <hr />
+
+        <h2>Botón de accesibilidad</h2>
+        {% if accesibilidad %}
+            <p>Pulse si solo desea ver los museos accesibles</p>
+            <form method="post" action="/">
+                <input type="submit" value="Desactivar" name="boton">
+            </form>
+        {% else %}
+            <p>Pulse si solo desea ver los museos accesibles</p>
+            <form method="post" action="/">
+                <input type="submit" value="Activar" name="boton">
+            </form>
+        {% endif %}
+        <hr />
+</div>
+{% endblock %}
+
+
+{% block main %}
+<div class="main">
+    {% if cargar %}
+        <form method="post" action="/">
+            <input class="cargar" type="submit" value="Cargar museos" name="cargar">
+        </form>
+    {% else %}
+        <h2>museos más comentados:</h2>
+        {% for comentado in masComentados %}
+            {% if comentado.num_com > 0 %}
+                <h1><a href="{{ comentado.url }}">{{ comentado.nombre }}
+                </a></h1><p>{{ comentado.via }},
+                {{ comentado.codigo_postal }} {{ comentado.localidad}}</p>
+                <p class="date"><img src="{% static 'imagen/mas.gif' %}" alt="mas"/>
+                <a href="/museos/{{ comentado.idx }}">Más información
+                </a></p><br />
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

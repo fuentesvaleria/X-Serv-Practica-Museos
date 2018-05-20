@@ -1,0 +1,55 @@
+{% extends "registro.html" %}
+
+{% load staticfiles %}
+
+{% block side %}
+<div class="side">
+    {% if usuario == "" or usuario.titulo == "" %}
+        <h2>"Página de {{ nick }}"</h2>
+    {% else %}
+        <h2>"{{ usuario.titulo }}"</h2>
+    {% endif %}
+    <hr />
+
+    {% if user.is_authenticated and user.username == nick %}
+        {% csrf_token %}
+        <h2>Cambiar letra y color </h2>
+        <form method="post" action="/{{ user.username }}">
+            <label for="size">Tamaño letra:</label>
+            <input value="{{ form.tamanioLetra }}" name="tamanioLetra"><br>
+            <label for="size">Color fondo:</label>
+            <input value="{{ form.colorFondo }}" name="colorFondo"><br><br>
+            <input type="submit" value="Enviar">
+        </form>
+        <hr />
+
+        <h2> Título de tu página personal</h2>
+        <form method="post" action="/{{ user.username }}">
+            <label for="size">Título:</label>
+            <input value="{{ form.titulo }}" name="titulo"><br><br>
+            <input type="submit" value="Enviar">
+        </form>
+        <hr />
+    {% endif %}
+</div>
+{% endblock %}
+
+
+{% block main %}
+<div class="main">
+    <h2>Museos seleccionados:</h2>
+    {% for seleccionado in seleccionados|slice:":5" %}
+        <h1><a href="{{ seleccionado.museo.url }}">{{ seleccionado.museo.nombre }}</a></h1>
+        <p>{{ seleccionado.museo.via }},
+        {{ seleccionado.museo.codigo_postal }} {{ seleccionado.museo.localidad}}</p>
+        <p class="date"><img src="{% static 'imagen/mas.gif' %}" alt="mas"/>
+        <a href="/museos/{{ seleccionado.museo.idx }}">Más información</a></p>
+        Seleccionado en: {{ seleccionado.fechaHora}}</p>
+        <br /><br />
+        {% if forloop.counter == 5 and not fin %}
+            <p class="mas"><a href="{{ seleccionado.usuario }}?{{ seleccionado.id }}">
+            Mostrar más museos</a></p>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}

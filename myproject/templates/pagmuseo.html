@@ -1,0 +1,45 @@
+{% extends "registro.html" %}
+
+{% block main %}
+<div class="mainLarge">
+    <h2>Características del museo:</h2>
+    <p><b>ID-ENTIDAD:</b> {{ museo.idx}}<br>
+    <b>NOMBRE:</b> {{ museo.nombre }}<br>
+    <b>DESCRIPCIÓN:</b> {{museo.descripcion }}<br>
+    {% if museo.accesibilidad == 1 %}
+        <b>ACCESIBLE:</b> Sí<br>
+    {% else %}
+        <b>ACCESIBLE:</b> No<br>
+    {% endif %}
+    <b>URL:</b> <a href="{{ museo.url }}">{{ museo.url }}
+    </a><br>
+    <b>DIRECCIÓN:</b> {{ aparcamiento.via }},
+    {{ museo.codigo_postal }} {{ museo.localidad}}<br>
+    <b>BARRIO:</b> {{ museo.barrio }}<br>
+    {% if museo.distrito == "" %}
+        <b>DISTRITO:</b> No disponible<br>
+    {% else %}
+        <b>DISTRITO:</b> {{ museo.distrito }}<br>
+    {% endif %}
+    {% if museo.telefono == "S/T" or museo.telefono == "T/D" %}
+        <b>TELÉFONO:</b> No disponible<br>
+    {% else %}
+        <b>TELÉFONO:</b> {{museo.telefono }}<br>
+    {% endif %}
+    <b>COMENTARIOS:</b><br>
+        {% for comentario in comentarios %}
+            - {{ comentario.texto}}<br>
+        {% endfor %}
+    <hr />
+
+    {% if user.is_authenticated %}
+        {% csrf_token %}
+        <h2>Introduce tu comentario:</h2>
+        <form method="post" action="/museos/{{ museo.idx }}">
+            <input class="comentario" value="{{ form.texto }}" name="texto"><br>
+            <input type="submit" value="Enviar">
+        </form>
+    {% endif %}
+</div>
+{% endblock %}
+
